@@ -19,7 +19,7 @@ function sleep(time) {
 let sse = null
 
 async function onAction() {
-    logger.info('onAction()')
+    controller.peformAction()
 }
 
 function openSSE() {
@@ -70,7 +70,7 @@ async function mainLoop() {
             while (true) {
                 await sleep(5000)
 
-                const value = Math.random()
+                const value = controller.readSensor()
                 await req.post({
                     url: '/device/sensor',
                     form: { value: value }
