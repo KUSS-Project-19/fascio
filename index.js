@@ -38,6 +38,9 @@ function openSSE() {
                 case 'action':
                     await onAction()
                     break
+                default:
+                    logger.log(`unknown sse message: ${e.data}`)
+                    break
             }
         }
         sse.onerror = e => {
