@@ -32,7 +32,7 @@ class Gpio {
 
 const sensor = new Gpio(10, 'in')
 const led = new Gpio(11, 'low')
-const ledStatus = 0
+let ledStatus = 0
 
 function readSensor() {
     return sensor.readSync()

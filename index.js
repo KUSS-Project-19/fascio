@@ -19,7 +19,7 @@ function sleep(time) {
 let sse = null
 
 async function onAction() {
-    controller.peformAction()
+    controller.performAction()
 }
 
 function openSSE() {
