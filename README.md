@@ -1,4 +1,3 @@
-디바이스 클라이언트.
+Software Security GIT CTF Toy Model Device Client Program
 
-무한루프를 돌면서 일정 주기마다 센서값을 보냄
-action 명령을 받으면 stdout에 출력함.
+documents: [https://github.com/KUSS-Project-19/README](https://github.com/KUSS-Project-19/README)
