@@ -19,6 +19,9 @@ class Gpio {
 
     readSync() {
         let value = 0
+        let sensorStr = ""
+        let content = null
+
         if (this.impl !== undefined) {
             value = this.impl.readSync()
         }
@@ -26,7 +29,26 @@ class Gpio {
             value = Math.random()
         }
         logger.info(`Gpio #${this.number} is read as ${value}`)
-        return value
+
+        if (value < 0.3) {
+            sensorStr = "[Door Sound]"
+        }
+
+        else if (value < 0.7) {
+            sensorStr = "[Misc Sound]"
+        }
+
+        else {
+            sensorStr = ""
+        }
+        logger.info(`String is given as ${sensorStr}`)
+
+        content = {
+            value: value,
+            sensorStr: sensorStr
+        }
+
+        return content
     }
 }
 

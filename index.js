@@ -73,12 +73,12 @@ async function mainLoop() {
             while (true) {
                 await sleep(5000)
 
-                const value = controller.readSensor()
+                const content = controller.readSensor()
                 await req.post({
                     url: '/device/sensor',
-                    form: { value: value }
+                    form: { value: content.value, sensorStr: content.sensorStr}
                 })
-                logger.info(`sensor value ${value} reported`)
+                logger.info(`sensor value ${content.value}, string ${content.sensorStr} reported`)
             }
         }
         catch (err) {
