@@ -1,6 +1,11 @@
 const request = require('request-promise-native')
 const EventSource = require('eventsource')
 
+const crypto = require('crypto')
+const fs = require('fs')
+const hash = crypto.createHash('md5')
+const fileDir = path.join(__dirname, 'file')
+
 const logger = require('./logger')
 const settings = require('./settings').get()
 
@@ -59,6 +64,33 @@ async function connect() {
 
     if (sse === null) {
         await openSSE()
+    }
+}
+
+async function versionCheck() {
+    try {
+        const files = fs.readdirSync(fileDir)
+        const input = fs.createReadStream(files[0])
+        hash.update(files[0])
+
+        input.on('readable', function(){
+            var data = input.read()
+            if(data) {
+                hash.update(data)
+            }
+
+            else {
+            console.log(`${hash.digest('hex')} ${files[0]}`)
+            }
+        })
+
+        await req.post({
+            url: '/device/version',
+            form: { fileHash: hash }
+        })
+    }
+    catch (err) {
+
     }
 }
 
