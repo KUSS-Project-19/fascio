@@ -4,7 +4,7 @@ const EventSource = require('eventsource')
 const crypto = require('crypto')
 const fs = require('fs')
 const hash = crypto.createHash('md5')
-const fileDir = path.join(__dirname, 'file')
+const fileLoc = path.join(__dirname, 'file/file.txt')
 
 const logger = require('./logger')
 const settings = require('./settings').get()
@@ -69,9 +69,7 @@ async function connect() {
 
 async function versionCheck() {
     try {
-        const files = fs.readdirSync(fileDir)
-        const input = fs.createReadStream(files[0])
-        hash.update(files[0])
+        const input = fs.createReadStream(fileLoc)
 
         input.on('readable', function(){
             var data = input.read()
@@ -80,7 +78,7 @@ async function versionCheck() {
             }
 
             else {
-            console.log(`${hash.digest('hex')} ${files[0]}`)
+            console.log(`${hash.digest('hex')} ${fileLoc}`)
             }
         })
 
@@ -88,6 +86,16 @@ async function versionCheck() {
             url: '/device/version',
             form: { fileHash: hash }
         })
+    }
+    catch (err) {
+
+    }
+}
+
+
+async function update() {
+    try {
+
     }
     catch (err) {
 
