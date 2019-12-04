@@ -1,9 +1,9 @@
 const request = require('request-promise-native')
 const EventSource = require('eventsource')
+const path = require('path')
 
 const crypto = require('crypto')
 const fs = require('fs')
-const hash = crypto.createHash('md5')
 const fileLoc = path.join(__dirname, 'file/file.txt')
 
 const logger = require('./logger')
@@ -70,25 +70,27 @@ async function connect() {
 async function versionCheck() {
     try {
         const input = fs.createReadStream(fileLoc)
+        var hash = crypto.createHash('md5')
+        var resultHash = ""
 
-        input.on('readable', function(){
-            var data = input.read()
-            if(data) {
-                hash.update(data)
-            }
-
-            else {
-            console.log(`${hash.digest('hex')} ${fileLoc}`)
-            }
+        input.on('data', function(d){
+            hash.update(d)
         })
 
-        await req.post({
-            url: '/device/version',
-            form: { fileHash: hash }
+        await input.on('end', function(){
+            resultHash = hash.digest('hex');
+            console.log(`${resultHash} ${fileLoc}`)
+
+            await req.post({
+                url: '/device/version',
+                form: { fileHash: resultHash }
+            })
+
+            console.log(`${res.body.needUpdate}`)
         })
     }
     catch (err) {
-
+        throw(err)
     }
 }
 
@@ -109,6 +111,8 @@ async function mainLoop() {
         try {
             await connect()
             logger.info('connected')
+
+            await versionCheck()
 
             while (true) {
                 await sleep(5000)
