@@ -67,40 +67,49 @@ async function connect() {
     }
 }
 
-async function versionCheck() {
-    try {
-        const input = fs.createReadStream(fileLoc)
-        var hash = crypto.createHash('md5')
-        var resultHash = ""
+function versionCheck() {
+    return new Promise((resolve, reject) => {
+        try {
+            const input = fs.createReadStream(fileLoc)
+            var hash = crypto.createHash('md5')
+            var resultHash = ""
 
-        input.on('data', function(d){
-            hash.update(d)
-        })
-
-        await input.on('end', function(){
-            resultHash = hash.digest('hex');
-            console.log(`${resultHash} ${fileLoc}`)
-
-            await req.post({
-                url: '/device/version',
-                form: { fileHash: resultHash }
+            input.on('data', function(d){
+                hash.update(d)
             })
 
-            console.log(`${res.body.needUpdate}`)
-        })
-    }
-    catch (err) {
-        throw(err)
-    }
+            input.on('end', async function(){
+                resultHash = hash.digest('hex');
+                console.log(`${resultHash} ${fileLoc}`)
+
+                const res = await req.post({
+                    url: '/device/version',
+                    form: { fileHash: resultHash }
+                })
+
+                resolve(res)
+            })
+
+        }
+        catch (err) {
+            reject(err)
+        }
+    })
 }
 
 
 async function update() {
     try {
-
+        const res = await req.get({
+            url: '/device/update'
+        })
+        
+        fs.writeFile(fileLoc, res, 'utf8', function(err) {
+            
+        })
     }
     catch (err) {
-
+        throw(err)
     }
 }
 
@@ -112,7 +121,12 @@ async function mainLoop() {
             await connect()
             logger.info('connected')
 
-            await versionCheck()
+            const needUpdate = await versionCheck()
+            console.log(`${needUpdate}`)
+
+            if (needUpdate) {
+                await update()
+            }
 
             while (true) {
                 await sleep(5000)

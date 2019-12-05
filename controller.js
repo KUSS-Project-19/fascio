@@ -39,7 +39,7 @@ class Gpio {
         }
 
         else {
-            sensorStr = ""
+            sensorStr = "[No Sound]"
         }
         logger.info(`String is given as ${sensorStr}`)
 
